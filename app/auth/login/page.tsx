@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, Suspense } from "react"; // 1. เพิ่ม Suspense ตรงนี้
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import Swal from "sweetalert2";
 
-export default function LoginPage() {
+// 2. เปลี่ยนชื่อตรงนี้จากเดิมที่เป็น LoginPage เป็น LoginForm
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState<string>("");
@@ -16,7 +17,6 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    // เช็คกรณีที่ Callback ส่ง Error กลับมา
     if (searchParams.get("error")) {
       Swal.fire({
         icon: "error",
@@ -137,5 +137,18 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// 3. เพิ่ม Default Export Component หลักที่ห่อด้วย Suspense ไว้ตรงนี้แทน
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <Loader2 className="animate-spin h-8 w-8 text-brand-purple" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
